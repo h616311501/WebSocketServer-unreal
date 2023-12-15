@@ -16,7 +16,8 @@ AWebSocketServer::AWebSocketServer()
 void AWebSocketServer::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	//UE_LOG(LogTemp, Log, TEXT("Start"));// 打印到outputlog
+	Start(9324);
 }
 
 void AWebSocketServer::Tick(float DeltaTime)
@@ -84,6 +85,7 @@ void AWebSocketServer::Send(const FString msg)
 	memcpy(uint8Array.GetData(), utf8Str.Get(), utf8StrLen);
 
 	for (auto& ws : Connections) {
+		
 		ws.Socket->Send(uint8Array.GetData(), uint8Array.Num(), /*PrependSize=*/false);
 	}
 }
@@ -95,13 +97,13 @@ bool AWebSocketServer::IsRunning() const
 
 void AWebSocketServer::_DebugLog(FString msg, float delayTime, FColor color)
 {
-	GEngine->AddOnScreenDebugMessage(-1, delayTime, color, " >LJason< " + msg);// 打印到屏幕
-	UE_LOG(LogTemp, Log, TEXT(" >LJason<  %s"), *msg);// 打印到outputlog
+	//GEngine->AddOnScreenDebugMessage(-1, delayTime, color, " >LJason< " + msg);// 打印到屏幕
+	//UE_LOG(LogTemp, Log, TEXT(" >LJason<  %s"), *msg);// 打印到outputlog
 }
 
 void AWebSocketServer::OnWebSocketClientConnected(INetworkingWebSocket* Socket)
 {
-	_DebugLog("----OnWebSocketClientConnected ", 10, FColor::Red);
+	//_DebugLog("----OnWebSocketClientConnected ", 10, FColor::Red);
 	if (ensureMsgf(Socket, TEXT("Socket was null while creating a new websocket connection.")))
 	{
 		FWebSocketConnection Connection = FWebSocketConnection{ Socket };
@@ -133,7 +135,7 @@ void AWebSocketServer::OnSocketClose(INetworkingWebSocket* Socket)
 {
 	int32 Index = Connections.IndexOfByPredicate([Socket](const FWebSocketConnection& Connection) { return Connection.Socket == Socket; });
 
-	_DebugLog("----OnSocketClose " + FString::FromInt(Index), 10, FColor::Red);
+	//_DebugLog("----OnSocketClose " + FString::FromInt(Index), 10, FColor::Red);
 	if (Index != INDEX_NONE)
 	{
 		OnConnectionClosed().Broadcast(Connections[Index].Id);
